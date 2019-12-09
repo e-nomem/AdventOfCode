@@ -1,5 +1,6 @@
 from enum import IntEnum
 from typing import List
+from typing import Optional
 
 from .io import Reader
 from .io import stdin
@@ -73,10 +74,14 @@ async def run_program(prog: List[int], reader: Reader = stdin, writer: Writer = 
             write(3, read(1) * read(2))
             ptr += 4
         elif instr == Opcode.Input:
+            val: Optional[int] = None
             async for val in read_iter:
                 # Read one value from input and break from the async generator
                 write(1, val)
                 break
+
+            if val is None:
+                raise RuntimeError('Input exhausted')
             ptr += 2
         elif instr == Opcode.Output:
             # Write is async because it may need to acquire a lock
