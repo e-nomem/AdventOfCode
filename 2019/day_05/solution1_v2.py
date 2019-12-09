@@ -2,6 +2,7 @@ import asyncio
 from os import path
 
 from ..intcode.executor import run_program
+from ..intcode.io import static_input
 from ..intcode.utils import load_program_from_string
 
 
@@ -10,7 +11,8 @@ async def main() -> None:
     infile = path.join(dirname, 'input.txt')
     with open(infile, 'r') as input_file:
         prog = load_program_from_string(input_file.read())
-        await run_program(prog)
+        reader = static_input(1)
+        await run_program(prog, reader=reader)
 
 
 if __name__ == '__main__':

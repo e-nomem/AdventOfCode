@@ -19,9 +19,47 @@ async def stdin() -> AsyncGenerator[int, None]:
 
 async def stdout(val: int) -> None:
     """
-    Default Writer implementation the prints to STDOUT
+    Default Writer implementation that prints to STDOUT
     """
     print(f'(output)> {val}')
+
+
+def repeat_input(val: int) -> Reader:
+    """
+    Creates a reader that will repeat the same input
+    """
+    async def _helper() -> AsyncGenerator[int, None]:
+        while True:
+            yield val
+
+    return _helper
+
+
+def static_input(*init: int) -> Reader:
+    """
+    Creates a Reader that will return static data
+    """
+    data = list(init)
+    data.reverse()
+
+    async def _helper() -> AsyncGenerator[int, None]:
+        while data:
+            yield data.pop()
+
+    return _helper
+
+
+def input_concat(*readers: Reader) -> Reader:
+    """
+    Takes in multiple Readers and returns a Reader that will read from them sequentially
+    """
+    async def _helper() -> AsyncGenerator[int, None]:
+        for reader in readers:
+            read_iter = reader()
+            async for val in read_iter:
+                yield val
+
+    return _helper
 
 
 def pipe(*init: int) -> Tuple[Reader, Writer]:
