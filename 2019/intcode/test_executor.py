@@ -175,7 +175,7 @@ async def test_jump_if_true__negative() -> None:
     with pytest.raises(RuntimeError) as e:
         await run_program(p)
 
-    assert str(e.value).startswith('Cannot jump to negative index')
+    assert str(e.value) == 'Cannot run with negative pointer -30'
 
 
 async def test_jump_if_false() -> None:
@@ -201,7 +201,7 @@ async def test_jump_if_false__negative() -> None:
     with pytest.raises(RuntimeError) as e:
         await run_program(p)
 
-    assert str(e.value).startswith('Cannot jump to negative index')
+    assert str(e.value) == 'Cannot run with negative pointer -30'
 
 
 async def test_less_than() -> None:

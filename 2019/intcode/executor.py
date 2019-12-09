@@ -91,6 +91,9 @@ async def run_program(prog: Program, reader: Reader = stdin, writer: Writer = st
 
     # Main program loop starts here
     while True:
+        if ptr < 0:
+            raise RuntimeError(f'Cannot run with negative pointer {ptr}')
+
         instr = opcode()
         if instr == Opcode.Add:
             write(3, read(1) + read(2))
@@ -114,17 +117,11 @@ async def run_program(prog: Program, reader: Reader = stdin, writer: Writer = st
             ptr += 2
         elif instr == Opcode.JmpIfTrue:
             if read(1):
-                val = read(2)
-                if val < 0:
-                    raise RuntimeError(f'Cannot jump to negative index {val} at index {ptr} ({prog[ptr]})')
                 ptr = read(2)
             else:
                 ptr += 3
         elif instr == Opcode.JmpIfFalse:
             if not read(1):
-                val = read(2)
-                if val < 0:
-                    raise RuntimeError(f'Cannot jump to negative index {val} at index {ptr} ({prog[ptr]})')
                 ptr = read(2)
             else:
                 ptr += 3
