@@ -10,7 +10,7 @@ fi
 printf -v DAY '%02d' ${1:-1}
 SOLUTION=${2:-1}
 
-if [[ ! -d "$YEAR" ]] || [[ ! -d "$YEAR/day_$DAY" ]] || [[ ! -f "$YEAR/day_$DAY/solution$SOLUTION.py" ]]; then
+if [[ ! -f "$YEAR/day_$DAY/solution$SOLUTION.py" ]]; then
     echo "[ERROR] Unable to find $YEAR/day_$DAY/solution$SOLUTION.py" >&2
     exit 1
 fi
