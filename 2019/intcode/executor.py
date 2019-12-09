@@ -48,24 +48,42 @@ async def run_program(prog: Program, reader: Reader = stdin, writer: Writer = st
             raise RuntimeError(f"Unknown parameter mode '{mode}' at index {ptr} ({prog[ptr]})")
 
     def read(param: int) -> int:
+        if param < 1:
+            raise RuntimeError(f'Parameter index cannot be less than 1. {param} at index {ptr} ({prog[ptr]})')
+
         mode = get_mode(param)
+        idx = -1
         if mode == ParameterMode.Position:
-            return prog[prog[ptr + param]]
+            idx = prog[ptr + param]
         elif mode == ParameterMode.Immediate:
-            return prog[ptr + param]
+            idx = ptr + param
         elif mode == ParameterMode.Relative:
-            return prog[rel_base + prog[ptr + param]]
+            idx = rel_base + prog[ptr + param]
         else:
             raise NotImplementedError(f"Parameter mode '{mode.name}' ({mode.value}) not yet implemented")
 
+        if idx < 0:
+            raise RuntimeError(f'Cannot read from negative pointer {idx} at index {ptr} ({prog[ptr]})')
+
+        return prog[idx]
+
     def write(param: int, value: int) -> None:
+        if param < 1:
+            raise RuntimeError(f'Parameter index cannot be less than 1. {param} at index {ptr} ({prog[ptr]})')
+
         mode = get_mode(param)
+        idx = -1
         if mode == ParameterMode.Position:
-            prog[prog[ptr + param]] = value
+            idx = prog[ptr + param]
         elif mode == ParameterMode.Relative:
-            prog[rel_base + prog[ptr + param]] = value
+            idx = rel_base + prog[ptr + param]
         else:
             raise NotImplementedError(f'Output parameter in mode {mode.name} ({mode.value}) is not supported')
+
+        if idx < 0:
+            raise RuntimeError(f'Cannot write to negative pointer {idx} at index {ptr} ({prog[ptr]})')
+
+        prog[idx] = value
 
     ptr = 0
     rel_base = 0
@@ -96,11 +114,17 @@ async def run_program(prog: Program, reader: Reader = stdin, writer: Writer = st
             ptr += 2
         elif instr == Opcode.JmpIfTrue:
             if read(1):
+                val = read(2)
+                if val < 0:
+                    raise RuntimeError(f'Cannot jump to negative index {val} at index {ptr} ({prog[ptr]})')
                 ptr = read(2)
             else:
                 ptr += 3
         elif instr == Opcode.JmpIfFalse:
             if not read(1):
+                val = read(2)
+                if val < 0:
+                    raise RuntimeError(f'Cannot jump to negative index {val} at index {ptr} ({prog[ptr]})')
                 ptr = read(2)
             else:
                 ptr += 3
