@@ -1,15 +1,15 @@
 import asyncio
 from itertools import permutations
 from os import path
-from typing import List
 
 from ..intcode.executor import run_program
 from ..intcode.io import pipe
 from ..intcode.io import spread_write
 from ..intcode.utils import load_program_from_string
+from ..intcode.utils import Program
 
 
-async def run_amplifiers_feedback(prog: List[int], count: int = 5) -> int:
+async def run_amplifiers_feedback(prog: Program, count: int = 5) -> int:
     phase_settings = list(permutations(range(count, count * 2)))  # Phase range for feedback is higher
     values = []
 

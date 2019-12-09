@@ -89,7 +89,6 @@ def spread_write(*writers: Writer) -> Writer:
     """
     Takes in multiple writers and returns a writer that will write to all of them
     """
-
     async def _helper(val: int) -> None:
         await asyncio.wait([w(val) for w in writers])
 

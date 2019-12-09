@@ -1,12 +1,12 @@
 import asyncio
 from os import path
-from typing import List
 
 from ..intcode.executor import run_program
 from ..intcode.utils import load_program_from_string
+from ..intcode.utils import Program
 
 
-async def find_inputs(prog: List[int], solution: int = 19690720) -> int:
+async def find_inputs(prog: Program, solution: int = 19690720) -> int:
     for noun in range(100):
         for verb in range(100):
             p = prog.copy()

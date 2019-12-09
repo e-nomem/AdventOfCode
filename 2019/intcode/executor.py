@@ -1,16 +1,17 @@
 from enum import IntEnum
-from typing import List
 from typing import Optional
 
 from .io import Reader
 from .io import stdin
 from .io import stdout
 from .io import Writer
+from .utils import Program
 
 
 class ParameterMode(IntEnum):
     Position = 0
     Immediate = 1
+    Relative = 2
 
 
 class Opcode(IntEnum):
@@ -22,10 +23,11 @@ class Opcode(IntEnum):
     JmpIfFalse = 6
     LessThan = 7
     Equals = 8
+    SetRelBase = 9
     Halt = 99
 
 
-async def run_program(prog: List[int], reader: Reader = stdin, writer: Writer = stdout) -> None:
+async def run_program(prog: Program, reader: Reader = stdin, writer: Writer = stdout) -> None:
     """
     Runs the provided program. The program will be mutated, so ensure that a copy is passed in if
     it should be reused/rerun multiple times
@@ -51,17 +53,22 @@ async def run_program(prog: List[int], reader: Reader = stdin, writer: Writer = 
             return prog[prog[ptr + param]]
         elif mode == ParameterMode.Immediate:
             return prog[ptr + param]
+        elif mode == ParameterMode.Relative:
+            return prog[rel_base + prog[ptr + param]]
         else:
             raise NotImplementedError(f"Parameter mode '{mode.name}' ({mode.value}) not yet implemented")
 
     def write(param: int, value: int) -> None:
         mode = get_mode(param)
-        if mode != ParameterMode.Position:
-            raise RuntimeError(f'Output parameter mode must be Position. At index {ptr} ({prog[ptr]})')
-
-        prog[prog[ptr + param]] = value
+        if mode == ParameterMode.Position:
+            prog[prog[ptr + param]] = value
+        elif mode == ParameterMode.Relative:
+            prog[rel_base + prog[ptr + param]] = value
+        else:
+            raise NotImplementedError(f'Output parameter in mode {mode.name} ({mode.value}) is not supported')
 
     ptr = 0
+    rel_base = 0
     read_iter = reader()
 
     # Main program loop starts here
@@ -109,6 +116,9 @@ async def run_program(prog: List[int], reader: Reader = stdin, writer: Writer = 
                 val = 1
             write(3, val)
             ptr += 4
+        elif instr == Opcode.SetRelBase:
+            rel_base += read(1)
+            ptr += 2
         elif instr == Opcode.Halt:
             return
         else:
