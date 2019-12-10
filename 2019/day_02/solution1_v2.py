@@ -1,7 +1,7 @@
 import asyncio
 from os import path
 
-from ..intcode.executor import run_program
+from ..intcode.executor import run
 from ..intcode.utils import load
 
 
@@ -12,7 +12,7 @@ async def main() -> None:
         prog = load(input_file.read())
         prog[1] = 12
         prog[2] = 2
-        await run_program(prog)
+        await run(prog)
         print(f'Solution : {prog[0]}')
 
 

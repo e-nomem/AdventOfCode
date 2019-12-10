@@ -2,7 +2,7 @@ import asyncio
 from itertools import permutations
 from os import path
 
-from ..intcode.executor import run_program
+from ..intcode.executor import run
 from ..intcode.io import pipe
 from ..intcode.io import spread_write
 from ..intcode.utils import load
@@ -35,7 +35,7 @@ async def run_amplifiers_feedback(prog: Program, count: int = 5) -> int:
             else:
                 _, writer = pipes[i + 1]
 
-            programs.append(run_program(prog.copy(), reader=reader, writer=writer))
+            programs.append(run(prog.copy(), reader=reader, writer=writer))
 
         await asyncio.wait(programs)  # Wait for all programs to terminate
         values.append(last_output)

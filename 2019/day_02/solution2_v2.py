@@ -1,7 +1,7 @@
 import asyncio
 from os import path
 
-from ..intcode.executor import run_program
+from ..intcode.executor import run
 from ..intcode.utils import load
 from ..intcode.utils import Program
 
@@ -12,7 +12,7 @@ async def find_inputs(prog: Program, solution: int = 19690720) -> int:
             p = prog.copy()
             p[1] = noun
             p[2] = verb
-            await run_program(p)
+            await run(p)
             if p[0] == solution:
                 return (100 * noun) + verb
     return -1

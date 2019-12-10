@@ -2,7 +2,7 @@ import asyncio
 from itertools import permutations
 from os import path
 
-from ..intcode.executor import run_program
+from ..intcode.executor import run
 from ..intcode.io import pipe
 from ..intcode.utils import load
 from ..intcode.utils import Program
@@ -29,7 +29,7 @@ async def run_amplifiers(prog: Program, count: int = 5) -> int:
             else:
                 _, writer = pipes[i + 1]
 
-            await run_program(prog.copy(), reader=reader, writer=writer)
+            await run(prog.copy(), reader=reader, writer=writer)
 
     # Now that all the amplifiers have run, return the max output
     return max(values)

@@ -2,7 +2,7 @@ from typing import AsyncGenerator
 
 import pytest
 
-from .executor import run_program
+from .executor import run
 from .utils import load
 
 # Mark all tests in this module as async
@@ -14,7 +14,7 @@ async def test_out_of_range_read() -> None:
     p = load(s)
 
     assert len(p) == 6
-    assert await run_program(p) == 4
+    assert await run(p) == 4
     assert p[5] == 0  # p[1] * p[15] = 2 * 0
 
 
@@ -23,7 +23,7 @@ async def test_negative_mem_read() -> None:
     p = load(s)
 
     with pytest.raises(RuntimeError) as e:
-        await run_program(p)
+        await run(p)
 
     assert str(e.value).startswith('Cannot read from negative pointer')
 
@@ -33,7 +33,7 @@ async def test_out_of_range_write() -> None:
     p = load(s)
 
     assert len(p) == 5
-    assert await run_program(p) == 4
+    assert await run(p) == 4
     assert p[19] == 0  # Unset memory location
     assert p[20] == 4  # Out of range write
 
@@ -43,7 +43,7 @@ async def test_negative_mem_write() -> None:
     p = load(s)
 
     with pytest.raises(RuntimeError) as e:
-        await run_program(p)
+        await run(p)
 
     assert str(e.value).startswith('Cannot write to negative pointer')
 
@@ -53,7 +53,7 @@ async def test_unknown_opcode() -> None:
     p = load(s)
 
     with pytest.raises(RuntimeError) as e:
-        await run_program(p)
+        await run(p)
 
     assert str(e.value).startswith('Unknown opcode')
 
@@ -63,7 +63,7 @@ async def test_unknown_param_mode() -> None:
     p = load(s)
 
     with pytest.raises(RuntimeError) as e:
-        await run_program(p)
+        await run(p)
 
     assert str(e.value).startswith('Unknown parameter mode')
 
@@ -73,7 +73,7 @@ async def test_read_param_immediate() -> None:
     p = load(s)
 
     assert len(p) == 6
-    assert await run_program(p) == 4
+    assert await run(p) == 4
     assert p[5] == 40
 
 
@@ -82,7 +82,7 @@ async def test_write_param_immediate() -> None:
     p = load(s)
 
     with pytest.raises(NotImplementedError) as e:
-        await run_program(p)
+        await run(p)
 
     assert str(e.value).startswith('Output parameter in mode')
 
@@ -92,7 +92,7 @@ async def test_halt() -> None:
     p = load(s)
 
     assert len(p) == 1
-    assert await run_program(p) == 0
+    assert await run(p) == 0
 
 
 async def test_add() -> None:
@@ -100,7 +100,7 @@ async def test_add() -> None:
     p = load(s)
 
     assert len(p) == 6
-    assert await run_program(p) == 4
+    assert await run(p) == 4
     assert p[5] == 2
 
 
@@ -109,7 +109,7 @@ async def test_multiply() -> None:
     p = load(s)
 
     assert len(p) == 6
-    assert await run_program(p) == 4
+    assert await run(p) == 4
     assert p[5] == 4
 
 
@@ -120,7 +120,7 @@ async def test_input() -> None:
     async def provider() -> AsyncGenerator[int, None]:
         yield 42
 
-    assert await run_program(p, reader=provider) == 2
+    assert await run(p, reader=provider) == 2
     assert p[1] == 42
 
 
@@ -132,7 +132,7 @@ async def test_input__exhausted() -> None:
         yield 42
 
     with pytest.raises(RuntimeError) as e:
-        await run_program(p, reader=provider)
+        await run(p, reader=provider)
 
     assert str(e.value) == 'Input exhausted'
     assert p[1] == 42
@@ -148,7 +148,7 @@ async def test_output() -> None:
         nonlocal output
         output = val
 
-    assert await run_program(p, writer=save) == 2
+    assert await run(p, writer=save) == 2
     assert output == 42
 
 
@@ -157,7 +157,7 @@ async def test_jump_if_true() -> None:
     p = load(s)
 
     assert len(p) == 7
-    assert await run_program(p) == 6
+    assert await run(p) == 6
 
 
 async def test_jump_if_true__false() -> None:
@@ -165,7 +165,7 @@ async def test_jump_if_true__false() -> None:
     p = load(s)
 
     assert len(p) == 7
-    assert await run_program(p) == 3
+    assert await run(p) == 3
 
 
 async def test_jump_if_true__negative() -> None:
@@ -173,7 +173,7 @@ async def test_jump_if_true__negative() -> None:
     p = load(s)
 
     with pytest.raises(RuntimeError) as e:
-        await run_program(p)
+        await run(p)
 
     assert str(e.value) == 'Cannot run with negative pointer -30'
 
@@ -183,7 +183,7 @@ async def test_jump_if_false() -> None:
     p = load(s)
 
     assert len(p) == 7
-    assert await run_program(p) == 6
+    assert await run(p) == 6
 
 
 async def test_jump_if_false__false() -> None:
@@ -191,7 +191,7 @@ async def test_jump_if_false__false() -> None:
     p = load(s)
 
     assert len(p) == 7
-    assert await run_program(p) == 3
+    assert await run(p) == 3
 
 
 async def test_jump_if_false__negative() -> None:
@@ -199,7 +199,7 @@ async def test_jump_if_false__negative() -> None:
     p = load(s)
 
     with pytest.raises(RuntimeError) as e:
-        await run_program(p)
+        await run(p)
 
     assert str(e.value) == 'Cannot run with negative pointer -30'
 
@@ -209,7 +209,7 @@ async def test_less_than() -> None:
     p = load(s)
 
     assert len(p) == 5
-    assert await run_program(p) == 4
+    assert await run(p) == 4
     assert p[0] == 1
 
 
@@ -218,7 +218,7 @@ async def test_less_than__false() -> None:
     p = load(s)
 
     assert len(p) == 6
-    assert await run_program(p) == 4
+    assert await run(p) == 4
     assert p[0] == 0
 
 
@@ -227,7 +227,7 @@ async def test_equals() -> None:
     p = load(s)
 
     assert len(p) == 5
-    assert await run_program(p) == 4
+    assert await run(p) == 4
     assert p[0] == 1
 
 
@@ -236,7 +236,7 @@ async def test_equals__false() -> None:
     p = load(s)
 
     assert len(p) == 6
-    assert await run_program(p) == 4
+    assert await run(p) == 4
     assert p[0] == 0
 
 
@@ -244,7 +244,7 @@ async def test_set_rel_base() -> None:
     s = '109,7,22101,15,0,1,99,17,10'
     p = load(s)
 
-    assert await run_program(p) == 6
+    assert await run(p) == 6
     assert p[8] == 32
 
 
@@ -252,5 +252,5 @@ async def test_set_rel_base__negative() -> None:
     s = '109,-15,22101,15,22,23,99,17,10'
     p = load(s)
 
-    assert await run_program(p) == 6
+    assert await run(p) == 6
     assert p[8] == 32

@@ -27,7 +27,7 @@ class Opcode(IntEnum):
     Halt = 99
 
 
-async def run_program(prog: Program, reader: Reader = stdin, writer: Writer = stdout) -> int:
+async def run(prog: Program, reader: Reader = stdin, writer: Writer = stdout) -> int:
     """
     Runs the provided program. The program will be mutated, so ensure that a copy is passed in if
     it should be reused/rerun multiple times
