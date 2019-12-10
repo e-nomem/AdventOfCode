@@ -38,14 +38,14 @@ async def run(prog: Program, reader: Reader = stdin, writer: Writer = stdout) ->
         try:
             return Opcode(code)
         except ValueError:
-            raise RuntimeError(f"Unknown opcode '{code}' at index {ptr} ({prog[ptr]})")
+            raise RuntimeError(f"Unknown opcode '{code}' at index {ptr} ({prog[ptr]})") from None
 
     def get_mode(param: int) -> ParameterMode:
         mode = (prog[ptr] // (10 ** (param + 1))) % 10
         try:
             return ParameterMode(mode)
         except ValueError:
-            raise RuntimeError(f"Unknown parameter mode '{mode}' at index {ptr} ({prog[ptr]})")
+            raise RuntimeError(f"Unknown parameter mode '{mode}' at index {ptr} ({prog[ptr]})") from None
 
     def read(param: int) -> int:
         if param < 1:
