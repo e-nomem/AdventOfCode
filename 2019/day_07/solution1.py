@@ -4,7 +4,7 @@ from os import path
 
 from ..intcode.executor import run_program
 from ..intcode.io import pipe
-from ..intcode.utils import load_program_from_string
+from ..intcode.utils import load
 from ..intcode.utils import Program
 
 
@@ -39,7 +39,7 @@ async def main() -> None:
     dirname = path.dirname(__file__)
     infile = path.join(dirname, 'input.txt')
     with open(infile, 'r') as input_file:
-        prog = load_program_from_string(input_file.read())
+        prog = load(input_file.read())
         max_output = await run_amplifiers(prog)
         print(f'Maximum Output: {max_output}')
 

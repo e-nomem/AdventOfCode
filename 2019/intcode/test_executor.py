@@ -3,7 +3,7 @@ from typing import AsyncGenerator
 import pytest
 
 from .executor import run_program
-from .utils import load_program_from_string
+from .utils import load
 
 # Mark all tests in this module as async
 pytestmark = pytest.mark.asyncio
@@ -11,7 +11,7 @@ pytestmark = pytest.mark.asyncio
 
 async def test_out_of_range_read() -> None:
     s = '2,0,15,5,99,1'
-    p = load_program_from_string(s)
+    p = load(s)
 
     assert len(p) == 6
     assert await run_program(p) == 4
@@ -20,7 +20,7 @@ async def test_out_of_range_read() -> None:
 
 async def test_negative_mem_read() -> None:
     s = '109,-15,201,0,0,0,99'
-    p = load_program_from_string(s)
+    p = load(s)
 
     with pytest.raises(RuntimeError) as e:
         await run_program(p)
@@ -30,7 +30,7 @@ async def test_negative_mem_read() -> None:
 
 async def test_out_of_range_write() -> None:
     s = '2,0,0,20,99'
-    p = load_program_from_string(s)
+    p = load(s)
 
     assert len(p) == 5
     assert await run_program(p) == 4
@@ -40,7 +40,7 @@ async def test_out_of_range_write() -> None:
 
 async def test_negative_mem_write() -> None:
     s = '109,-15,21101,1,1,0,99'
-    p = load_program_from_string(s)
+    p = load(s)
 
     with pytest.raises(RuntimeError) as e:
         await run_program(p)
@@ -50,7 +50,7 @@ async def test_negative_mem_write() -> None:
 
 async def test_unknown_opcode() -> None:
     s = '98'
-    p = load_program_from_string(s)
+    p = load(s)
 
     with pytest.raises(RuntimeError) as e:
         await run_program(p)
@@ -60,7 +60,7 @@ async def test_unknown_opcode() -> None:
 
 async def test_unknown_param_mode() -> None:
     s = '901'
-    p = load_program_from_string(s)
+    p = load(s)
 
     with pytest.raises(RuntimeError) as e:
         await run_program(p)
@@ -70,7 +70,7 @@ async def test_unknown_param_mode() -> None:
 
 async def test_read_param_immediate() -> None:
     s = '1101,15,25,5,99,0'
-    p = load_program_from_string(s)
+    p = load(s)
 
     assert len(p) == 6
     assert await run_program(p) == 4
@@ -79,7 +79,7 @@ async def test_read_param_immediate() -> None:
 
 async def test_write_param_immediate() -> None:
     s = '10001,1,1,1,99'
-    p = load_program_from_string(s)
+    p = load(s)
 
     with pytest.raises(NotImplementedError) as e:
         await run_program(p)
@@ -89,7 +89,7 @@ async def test_write_param_immediate() -> None:
 
 async def test_halt() -> None:
     s = '99'
-    p = load_program_from_string(s)
+    p = load(s)
 
     assert len(p) == 1
     assert await run_program(p) == 0
@@ -97,7 +97,7 @@ async def test_halt() -> None:
 
 async def test_add() -> None:
     s = '1,0,0,5,99,0'
-    p = load_program_from_string(s)
+    p = load(s)
 
     assert len(p) == 6
     assert await run_program(p) == 4
@@ -106,7 +106,7 @@ async def test_add() -> None:
 
 async def test_multiply() -> None:
     s = '2,0,2,5,99,0'
-    p = load_program_from_string(s)
+    p = load(s)
 
     assert len(p) == 6
     assert await run_program(p) == 4
@@ -115,7 +115,7 @@ async def test_multiply() -> None:
 
 async def test_input() -> None:
     s = '3,1,99'
-    p = load_program_from_string(s)
+    p = load(s)
 
     async def provider() -> AsyncGenerator[int, None]:
         yield 42
@@ -126,7 +126,7 @@ async def test_input() -> None:
 
 async def test_input__exhausted() -> None:
     s = '3,1,3,3'
-    p = load_program_from_string(s)
+    p = load(s)
 
     async def provider() -> AsyncGenerator[int, None]:
         yield 42
@@ -141,7 +141,7 @@ async def test_input__exhausted() -> None:
 
 async def test_output() -> None:
     s = '104,42,99'
-    p = load_program_from_string(s)
+    p = load(s)
     output = 0
 
     async def save(val: int) -> None:
@@ -154,7 +154,7 @@ async def test_output() -> None:
 
 async def test_jump_if_true() -> None:
     s = '1105,1,6,99,0,0,99'
-    p = load_program_from_string(s)
+    p = load(s)
 
     assert len(p) == 7
     assert await run_program(p) == 6
@@ -162,7 +162,7 @@ async def test_jump_if_true() -> None:
 
 async def test_jump_if_true__false() -> None:
     s = '1105,0,6,99,0,0,99'
-    p = load_program_from_string(s)
+    p = load(s)
 
     assert len(p) == 7
     assert await run_program(p) == 3
@@ -170,7 +170,7 @@ async def test_jump_if_true__false() -> None:
 
 async def test_jump_if_true__negative() -> None:
     s = '1105,-20,-30,99'
-    p = load_program_from_string(s)
+    p = load(s)
 
     with pytest.raises(RuntimeError) as e:
         await run_program(p)
@@ -180,7 +180,7 @@ async def test_jump_if_true__negative() -> None:
 
 async def test_jump_if_false() -> None:
     s = '1106,0,6,99,0,0,99'
-    p = load_program_from_string(s)
+    p = load(s)
 
     assert len(p) == 7
     assert await run_program(p) == 6
@@ -188,7 +188,7 @@ async def test_jump_if_false() -> None:
 
 async def test_jump_if_false__false() -> None:
     s = '1106,-15,6,99,0,0,99'
-    p = load_program_from_string(s)
+    p = load(s)
 
     assert len(p) == 7
     assert await run_program(p) == 3
@@ -196,7 +196,7 @@ async def test_jump_if_false__false() -> None:
 
 async def test_jump_if_false__negative() -> None:
     s = '1106,0,-30,99'
-    p = load_program_from_string(s)
+    p = load(s)
 
     with pytest.raises(RuntimeError) as e:
         await run_program(p)
@@ -206,7 +206,7 @@ async def test_jump_if_false__negative() -> None:
 
 async def test_less_than() -> None:
     s = '1107,-5,0,0,99'
-    p = load_program_from_string(s)
+    p = load(s)
 
     assert len(p) == 5
     assert await run_program(p) == 4
@@ -215,7 +215,7 @@ async def test_less_than() -> None:
 
 async def test_less_than__false() -> None:
     s = '107,-5,5,0,99,-15'
-    p = load_program_from_string(s)
+    p = load(s)
 
     assert len(p) == 6
     assert await run_program(p) == 4
@@ -224,7 +224,7 @@ async def test_less_than__false() -> None:
 
 async def test_equals() -> None:
     s = '1108,-5,-5,0,99'
-    p = load_program_from_string(s)
+    p = load(s)
 
     assert len(p) == 5
     assert await run_program(p) == 4
@@ -233,7 +233,7 @@ async def test_equals() -> None:
 
 async def test_equals__false() -> None:
     s = '108,0,5,0,99,-15'
-    p = load_program_from_string(s)
+    p = load(s)
 
     assert len(p) == 6
     assert await run_program(p) == 4
@@ -242,7 +242,7 @@ async def test_equals__false() -> None:
 
 async def test_set_rel_base() -> None:
     s = '109,7,22101,15,0,1,99,17,10'
-    p = load_program_from_string(s)
+    p = load(s)
 
     assert await run_program(p) == 6
     assert p[8] == 32
@@ -250,7 +250,7 @@ async def test_set_rel_base() -> None:
 
 async def test_set_rel_base__negative() -> None:
     s = '109,-15,22101,15,22,23,99,17,10'
-    p = load_program_from_string(s)
+    p = load(s)
 
     assert await run_program(p) == 6
     assert p[8] == 32

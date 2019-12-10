@@ -4,6 +4,6 @@ from typing import Dict
 Program = Dict[int, int]
 
 
-def load_program_from_string(data: str) -> Program:
-    d = [int(i) for i in data.strip().split(',')]
+def load(data: str) -> Program:
+    d = [int(i) for i in data.strip().split(',') if i]
     return defaultdict(int, enumerate(d))
