@@ -2,6 +2,10 @@ import asyncio
 from os import path
 from typing import List
 
+from ..util import ImageBuf
+from ..util import Point
+from ..util import print_image
+
 
 def read_layers(data: str, x_size: int = 25, y_size: int = 6) -> List[str]:
     layer_size = x_size * y_size
@@ -11,15 +15,17 @@ def read_layers(data: str, x_size: int = 25, y_size: int = 6) -> List[str]:
     ]
 
 
-def print_image(layers: List[str], x_size: int = 25, y_size: int = 6) -> None:
+def merge_layers(layers: List[str], x_size: int = 25, y_size: int = 6) -> ImageBuf:
+    points = set()
     for y in range(y_size):
         for x in range(x_size):
             idx = (y * x_size) + x
             for layer in layers:
                 if layer[idx] != '2':
-                    print(layer[idx].replace('0', ' '), end='')
+                    if layer[idx] == '1':
+                        points.add(Point(x, -y))
                     break
-        print()
+    return points
 
 
 async def main() -> None:
@@ -27,7 +33,8 @@ async def main() -> None:
     infile = path.join(dirname, 'input.txt')
     with open(infile, 'r') as input_file:
         layers = read_layers(input_file.read().strip())
-        print_image(layers)
+        merged = merge_layers(layers)
+        print_image(merged)
 
 
 if __name__ == '__main__':

@@ -10,6 +10,7 @@ from ..intcode.executor import run
 from ..intcode.utils import load
 from ..intcode.utils import Program
 from ..util import Point
+from ..util import print_image
 
 
 def generate_plane() -> Dict[int, Dict[int, int]]:
@@ -67,18 +68,6 @@ async def paint(plane: Dict[int, Dict[int, int]], prog: Program) -> Set[Point]:
     return visited
 
 
-def print_plane(plane: Dict[int, Dict[int, int]], visited: Set[Point]) -> None:
-    min_x = min(p.x for p in visited)
-    max_x = max(p.x for p in visited)
-    min_y = min(p.y for p in visited)
-    max_y = max(p.y for p in visited)
-
-    for y in range(max_y, min_y - 1, -1):
-        for x in range(min_x, max_x + 1):
-            print('#' if plane[x][y] else ' ', end='')
-        print()
-
-
 async def main() -> None:
     dirname = path.dirname(__file__)
     infile = path.join(dirname, 'input.txt')
@@ -88,7 +77,7 @@ async def main() -> None:
         plane[0][0] = 1
 
         visited = await paint(plane, prog)
-        print_plane(plane, visited)
+        print_image({p for p in visited if plane[p.x][p.y]})
 
 
 if __name__ == '__main__':
