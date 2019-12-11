@@ -32,14 +32,14 @@ async def main() -> None:
         # First sort the asteroids by distance from the laser
         asteroids.sort(key=lambda o: hypot(o.x - base.x, o.y - base.y))
 
-        # Make a dict of asteroid -> count of asteroids directly behind it
+        # Make a dict of asteroid -> count of asteroids directly in front of it
         ranks = {
             a: sum(angle(base, a) == angle(base, b) for b in asteroids[:i])
             for i, a in enumerate(asteroids)
         }
 
         # Sort asteroids by:
-        # 1) The rank (higher value = closer to laser = first to be vaporized)
+        # 1) The rank (same rank == vaporized in the same cycle of the laser)
         # 2) The angle (laser starts pointing up and circles around clockwise)
         winner = sorted(asteroids, key=lambda o: (ranks[o], angle(base, o)))[199]
 
