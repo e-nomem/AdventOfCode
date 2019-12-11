@@ -5,7 +5,7 @@ from math import pi
 from os import path
 from typing import List
 
-from ..util.point import Point
+from ..util import Point
 
 
 def angle(a: Point, b: Point) -> float:
