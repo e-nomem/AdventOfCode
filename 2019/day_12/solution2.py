@@ -1,4 +1,5 @@
 import asyncio
+from functools import reduce
 from itertools import count
 from math import gcd
 from os import path
@@ -7,7 +8,6 @@ from typing import Set
 from typing import Tuple
 
 Moon = Tuple[List[int], List[int]]
-Moons = List[Moon]
 
 
 def process_input(i: str) -> List[int]:
@@ -15,24 +15,22 @@ def process_input(i: str) -> List[int]:
     return [int(p.strip('<>').split('=')[1]) for p in parts]
 
 
-def update_vel(moons: Moons) -> Moons:
+def update_vel(moons: List[Moon]) -> List[Moon]:
     for i, moon in enumerate(moons):
-        for j, other in enumerate(moons):
-            if i == j:
-                continue
-
+        for other in moons[i+1:]:
             for axis in range(3):
                 a_m = moon[0][axis]
                 a_o = other[0][axis]
                 if a_m > a_o:
                     moon[1][axis] -= 1
+                    other[1][axis] += 1
                 elif a_m < a_o:
                     moon[1][axis] += 1
-
+                    other[1][axis] -= 1
     return moons
 
 
-def update_pos(moons: Moons) -> Moons:
+def update_pos(moons: List[Moon]) -> List[Moon]:
     for moon in moons:
         for axis in range(3):
             moon[0][axis] += moon[1][axis]
@@ -40,7 +38,7 @@ def update_pos(moons: Moons) -> Moons:
     return moons
 
 
-def step(moons: Moons, count: int = 1) -> Moons:
+def step(moons: List[Moon], count: int = 1) -> List[Moon]:
     for _ in range(count):
         moons = update_vel(moons)
         moons = update_pos(moons)
@@ -48,38 +46,29 @@ def step(moons: Moons, count: int = 1) -> Moons:
     return moons
 
 
-def find_periods(moons: Moons) -> Tuple[int, int, int]:
-    px = 0
-    py = 0
-    pz = 0
-    sx: Set[str] = set()
-    sy: Set[str] = set()
-    sz: Set[str] = set()
-    for i in count(0):
-        if px and py and pz:
+def strify(moons: List[Moon], axis: int) -> str:
+    return str([[m[0][axis], m[1][axis]] for m in moons])
+
+
+def find_periods(moons: List[Moon]) -> List[int]:
+    period = [0, 0, 0]
+    positions: List[Set[str]] = [set(), set(), set()]
+    for i in count():
+        if all(period):
             break
 
         moons = step(moons)
 
         # Stringify the list of [pos[axis], vel[axis]] values for each moon
         # When we see an exact match, we have found the period for that axis
-        if not px:
-            posx = str([[m[0][0], m[1][0]] for m in moons])
-            if posx in sx:
-                px = i
-            sx.add(posx)
-        if not py:
-            posy = str([[m[0][1], m[1][1]] for m in moons])
-            if posy in sy:
-                py = i
-            sy.add(posy)
-        if not pz:
-            posz = str([[m[0][2], m[1][2]] for m in moons])
-            if posz in sz:
-                pz = i
-            sz.add(posz)
+        for axis in range(3):
+            if not period[axis]:
+                pos = strify(moons, axis)
+                if pos in positions[axis]:
+                    period[axis] = i
+                positions[axis].add(pos)
 
-    return px, py, pz
+    return period
 
 
 def lcm(x: int, y: int) -> int:
@@ -90,13 +79,13 @@ async def main() -> None:
     dirname = path.dirname(__file__)
     infile = path.join(dirname, 'input.txt')
     with open(infile, 'r') as input_file:
-        moon_pos = [process_input(l) for l in input_file]
-        moons = [(i, [0, 0, 0]) for i in moon_pos]
-
-        x, y, z = find_periods(moons)
+        moons = [
+            (i, [0, 0, 0]) for i in
+            (process_input(l) for l in input_file)
+        ]
 
         # Answer is the least common multiple of all the periods
-        solution = lcm(lcm(x, y), z)
+        solution = reduce(lcm, find_periods(moons), 1)
         print(f'Solution: {solution}')
 
 
