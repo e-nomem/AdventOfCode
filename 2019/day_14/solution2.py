@@ -1,4 +1,5 @@
 import asyncio
+from collections import Counter
 from math import ceil
 from os import path
 from typing import Callable
@@ -48,55 +49,44 @@ def process_input(line: str):
     CHEMS[chem_out] = process
 
 
-def resolve(name: str, amount: int, have: Dict[str, int]) -> Dict[str, int]:
-    needed: Dict[str, int] = {}
+def resolve(name: str, current: Counter) -> Counter:
     for c in CHEMS.keys():
         if c.name == name:
             break
 
     if c.name != name:
-        return needed
+        raise RuntimeError(f'Could not find chemical {name}')
 
-    overflow_amount = have.get(c.name, 0)
-    if overflow_amount >= amount:
-        overflow_amount -= amount
-        have[c.name] = overflow_amount
-        return needed
-    else:
-        have[c.name] = 0
-
-    amount -= overflow_amount
-    count = ceil(amount / c.amount)
     process = CHEMS.get(c)
     if process is None:
         raise RuntimeError(f'Could not find process for {c.name}')
 
-    for chem in process:
-        a = needed.get(chem.name, 0)
-        needed[chem.name] = a + (chem.amount * count)
+    if current[c.name] >= 0:
+        return current
 
-    overflow_amount = (c.amount * count) - amount
-    have[c.name] = overflow_amount
-    return needed
+    batches = ceil(abs(current[c.name]) / c.amount)
+    for chem in process:
+        current[chem.name] -= (chem.amount * batches)
+
+    current[c.name] += (c.amount * batches)
+    return current
 
 
 def make_chemical(name: str = 'FUEL', amount: int = 1) -> int:
-    needed: Dict[str, int] = {}
-    have: Dict[str, int] = {}
-    for current_chem in CHEMS.keys():
-        if current_chem.name == name:
-            break
+    current: Counter = Counter({name: -amount})
+    current = resolve(name, current)
 
-    needed.update(resolve(current_chem.name, amount, have))
-
-    while len(needed) != 1:
-        for chem, _ in needed.items():
+    while sum(1 for _, i in current.items() if i < 0) != 1:
+        for chem, _ in current.items():
             if chem == 'ORE':
+                continue
+
+            if current[chem] >= 0:
                 continue
 
             skip = False
             for consumer in CONSUMERS.get(chem, []):
-                if needed.get(consumer, 0) != 0:
+                if current[consumer] < 0:
                     skip = True
                     break
 
@@ -105,12 +95,9 @@ def make_chemical(name: str = 'FUEL', amount: int = 1) -> int:
 
             break
 
-        amt = needed.pop(chem, 0)
-        for c, a in resolve(chem, amt, have).items():
-            current = needed.get(c, 0)
-            needed[c] = current + a
+        current = resolve(chem, current)
 
-    return needed.get('ORE', -1)
+    return abs(current['ORE'])
 
 
 def binary_search(low: int, high: int, comparator: Callable[[int], int]) -> int:
@@ -118,14 +105,14 @@ def binary_search(low: int, high: int, comparator: Callable[[int], int]) -> int:
         mid = low + (high - low) // 2
         target = comparator(mid)
         if target == 0:
-            return int(mid)
+            return mid
         elif target < 0:
             low = mid + 1
         else:
             high = mid - 1
 
     # Return -(insertion point) - 1
-    return int(-low - 1)
+    return -low - 1
 
 
 async def main() -> None:
@@ -136,7 +123,11 @@ async def main() -> None:
             process_input(line.strip())
 
         idx = binary_search(100_000, 100_000_000, lambda i: make_chemical(amount=i) - 1000000000000)
-        print(f'Solution: {abs(idx) - 2}')
+
+        if idx < 0:
+            idx = abs(idx) - 2
+
+        print(f'Solution: {idx}')
 
 
 if __name__ == '__main__':
