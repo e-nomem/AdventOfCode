@@ -37,7 +37,7 @@ async def run_amplifiers_feedback(prog: Program, count: int = 5) -> int:
 
             programs.append(run(prog.copy(), reader=reader, writer=writer))
 
-        await asyncio.wait(programs)  # Wait for all programs to terminate
+        await asyncio.wait([asyncio.create_task(p) for p in programs])  # Wait for all programs to terminate
         values.append(last_output)
 
     # Now that all the amplifiers have run, return the max output

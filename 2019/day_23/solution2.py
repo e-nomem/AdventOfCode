@@ -80,7 +80,7 @@ async def run_network(prog: Program) -> int:
         input_buffers[net_id] = []
         programs.append(run(prog.copy(), reader=reader(net_id), writer=writer()))
 
-    await asyncio.wait(programs, return_when=asyncio.FIRST_COMPLETED)
+    await asyncio.wait([asyncio.create_task(p) for p in programs], return_when=asyncio.FIRST_COMPLETED)
 
     return input_buffers[255][0][1]
 
