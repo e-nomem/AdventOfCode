@@ -73,23 +73,13 @@ def resolve(name: str, current: Counter) -> Counter:
 
 def make_chemical(name: str = 'FUEL', amount: int = 1) -> int:
     current: Counter = Counter({name: -amount})
-    current = resolve(name, current)
 
-    while sum(1 for _, i in current.items() if i < 0) != 1:
-        for chem, _ in current.items():
-            if chem == 'ORE':
+    while [n for n, i in current.items() if i < 0 and n != 'ORE']:
+        for chem, amt in current.items():
+            if chem == 'ORE' or amt >= 0:
                 continue
 
-            if current[chem] >= 0:
-                continue
-
-            skip = False
-            for consumer in CONSUMERS.get(chem, []):
-                if current[consumer] < 0:
-                    skip = True
-                    break
-
-            if skip:
+            if [c for c in CONSUMERS.get(chem, []) if current[c] < 0]:
                 continue
 
             break

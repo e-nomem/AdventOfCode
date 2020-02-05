@@ -74,23 +74,13 @@ def resolve(name: str, current: Counter) -> Counter:
 
 def make_chemical(name: str = 'FUEL', amount: int = 1) -> int:
     current: Counter = Counter({name: -amount})
-    current = resolve(name, current)
 
-    while sum(1 for _, i in current.items() if i < 0) != 1:
-        for chem, _ in current.items():
-            if chem == 'ORE':
+    while [n for n, i in current.items() if i < 0 and n != 'ORE']:
+        for chem, amt in current.items():
+            if chem == 'ORE' or amt >= 0:
                 continue
 
-            if current[chem] >= 0:
-                continue
-
-            skip = False
-            for consumer in CONSUMERS.get(chem, []):
-                if current[consumer] < 0:
-                    skip = True
-                    break
-
-            if skip:
+            if [c for c in CONSUMERS.get(chem, []) if current[c] < 0]:
                 continue
 
             break
@@ -122,7 +112,7 @@ async def main() -> None:
         for line in input_file:
             process_input(line.strip())
 
-        idx = binary_search(100_000, 100_000_000, lambda i: make_chemical(amount=i) - 1000000000000)
+        idx = binary_search(100_000, 100_000_000, lambda i: make_chemical(amount=i) - 1_000_000_000_000)
 
         if idx < 0:
             idx = abs(idx) - 2
