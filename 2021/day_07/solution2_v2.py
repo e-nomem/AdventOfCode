@@ -3,6 +3,18 @@ import decimal
 from decimal import Decimal
 from os import path
 from statistics import mean
+from typing import Callable
+
+
+def distance_from(pos: Decimal) -> Callable[[Decimal], Decimal]:
+    def _helper(crab: Decimal) -> Decimal:
+        return abs(pos - crab)
+
+    return _helper
+
+
+def triangle(i: Decimal) -> Decimal:
+    return (i ** 2 + i) // 2
 
 
 async def main() -> None:
@@ -11,10 +23,9 @@ async def main() -> None:
     with open(infile) as input_file:
         crabs = [Decimal(p) for p in next(input_file).strip().split(',')]
         mean_pos = mean(crabs).quantize(1, decimal.ROUND_05UP)
-        fuel = sum(((d ** 2) + d) // 2 for c in crabs for d in [abs(mean_pos - c)])
-        print(fuel)
+
+        print(sum(map(triangle, map(distance_from(mean_pos), crabs))))
 
 
 if __name__ == '__main__':
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    asyncio.run(main())

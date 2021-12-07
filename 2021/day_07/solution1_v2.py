@@ -1,6 +1,14 @@
 import asyncio
 from os import path
 from statistics import median
+from typing import Callable
+
+
+def distance_from(pos: int) -> Callable[[int], int]:
+    def _helper(crab: int) -> int:
+        return abs(pos - crab)
+
+    return _helper
 
 
 async def main() -> None:
@@ -10,9 +18,8 @@ async def main() -> None:
         crabs = [int(p) for p in next(input_file).strip().split(',')]
         median_pos = int(median(crabs))
 
-        print(sum(abs(median_pos - i) for i in crabs))
+        print(sum(map(distance_from(median_pos), crabs)))
 
 
 if __name__ == '__main__':
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    asyncio.run(main())

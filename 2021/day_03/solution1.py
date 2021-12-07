@@ -7,7 +7,7 @@ async def main() -> None:
     dirname = path.dirname(__file__)
     infile = path.join(dirname, 'input.txt')
     with open(infile) as input_file:
-        c = Counter()
+        c: Counter[int] = Counter()
         for line in input_file:
             for idx, char in enumerate(line.strip()):
                 mod = 1 if int(char) else -1
@@ -27,5 +27,4 @@ async def main() -> None:
 
 
 if __name__ == '__main__':
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(main())
+    asyncio.run(main())
