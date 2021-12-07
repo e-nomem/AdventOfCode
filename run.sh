@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-YEAR=2019
+YEAR=2021
 if [[ "$#" -eq 3 ]]; then
     YEAR=$1
     shift
@@ -20,7 +20,7 @@ run() {
     else
         echo "[INFO] Running $fname"
     fi
-    exec python3 -m $1.day_$2.solution$3
+    exec pipenv run python -m $1.day_$2.solution$3
 }
 
 run "$YEAR" "$DAY" "$SOLUTION"
