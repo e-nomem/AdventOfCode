@@ -17,22 +17,15 @@ def step(polymers: Counter[tuple[str, str]], patterns: dict[tuple[str, str], str
 
 
 def calculate(polymers: Counter[tuple[str, str]], template: str) -> int:
-    c: Counter[str] = Counter()
+    c: Counter[str] = Counter(template[-1])
 
-    # This loop will double count every character except for the first and last one
     for polymer, count in polymers.items():
         c[polymer[0]] += count
-        c[polymer[1]] += count
-
-    # Adjust for the under counting of the first and last chars here
-    c[template[0]] += 1
-    c[template[-1]] += 1
 
     min_count = min(c.values())
     max_count = max(c.values())
 
-    # Since we double count everything, divide by two
-    return (max_count - min_count) // 2
+    return max_count - min_count
 
 
 async def main() -> None:
