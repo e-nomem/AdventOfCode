@@ -1,14 +1,14 @@
 from collections import deque
-from typing import Generator
-from typing import Iterable
+from collections.abc import Generator
+from collections.abc import Iterable
 from typing import TypeVar
 
-_T = TypeVar('_T')
+_T = TypeVar("_T")
 
 
 def window(inp: Iterable[_T], n: int = 2) -> Generator[tuple[_T, ...], None, None]:
     if n < 1:
-        raise ValueError('Window size must be greater than 0')
+        raise ValueError("Window size must be greater than 0")
 
     it = iter(inp)
     buf: deque[_T] = deque(maxlen=n)

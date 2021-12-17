@@ -32,7 +32,8 @@ def test_multiple_windows() -> None:
 
 
 @pytest.mark.parametrize(
-    'window_size', [
+    "window_size",
+    [
         0,
         -1,
     ],
@@ -44,7 +45,7 @@ def test_window_window_size_less_than_one(window_size: int) -> None:
         # from the iterator
         next(it)
 
-    assert str(e.value) == 'Window size must be greater than 0'
+    assert str(e.value) == "Window size must be greater than 0"
 
 
 def test_window_window_size_one() -> None:

@@ -5,7 +5,7 @@ from time import perf_counter_ns
 
 
 def benchmark(n: int):
-    if not getenv('ENABLE_BENCHMARK'):
+    if not getenv("ENABLE_BENCHMARK"):
         n = 1
 
     def _benchmark(f):
@@ -18,14 +18,14 @@ def benchmark(n: int):
                 timing.append((end - start) // 1000000)
 
             print()
-            print('Statistics:')
+            print("Statistics:")
             if len(timing) == 1:
-                print(f'-> Elapsed: {timing[0]}ms')
+                print(f"-> Elapsed: {timing[0]}ms")
             else:
                 average = mean(timing)
                 deviation = stdev(timing, xbar=average)
-                print(f'-> Average: {average}ms')
-                print(f'-> StdDev: {deviation}ms')
+                print(f"-> Average: {average}ms")
+                print(f"-> StdDev: {deviation}ms")
 
         return _helper
 

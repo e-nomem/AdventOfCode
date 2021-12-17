@@ -5,7 +5,7 @@ from os import path
 
 async def main() -> None:
     dirname = path.dirname(__file__)
-    infile = path.join(dirname, 'input.txt')
+    infile = path.join(dirname, "input.txt")
     with open(infile) as input_file:
         numbers = list(sorted(line.strip() for line in input_file))
         low = 0
@@ -41,5 +41,5 @@ async def main() -> None:
         print(int(o2, 2) * int(co2, 2))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

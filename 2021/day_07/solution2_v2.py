@@ -1,9 +1,9 @@
 import asyncio
 import decimal
+from collections.abc import Callable
 from decimal import Decimal
 from os import path
 from statistics import mean
-from typing import Callable
 
 
 def distance_from(pos: Decimal) -> Callable[[Decimal], Decimal]:
@@ -19,13 +19,13 @@ def triangle(i: Decimal) -> Decimal:
 
 async def main() -> None:
     dirname = path.dirname(__file__)
-    infile = path.join(dirname, 'input.txt')
+    infile = path.join(dirname, "input.txt")
     with open(infile) as input_file:
-        crabs = [Decimal(p) for p in next(input_file).strip().split(',')]
+        crabs = [Decimal(p) for p in next(input_file).strip().split(",")]
         mean_pos = mean(crabs).quantize(1, decimal.ROUND_05UP)
 
         print(sum(map(triangle, map(distance_from(mean_pos), crabs))))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

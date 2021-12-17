@@ -10,7 +10,7 @@ class Node:
         self.is_small = name.islower()
         self.connected: set[str] = set()
 
-    def add_connection(self, other: 'Node'):
+    def add_connection(self, other: "Node"):
         self.connected.add(other.name)
         other.connected.add(self.name)
 
@@ -19,7 +19,7 @@ def can_visit(next: Node, stack: list[Node]) -> bool:
     if not next.is_small:
         return True
 
-    if next.name == 'start':
+    if next.name == "start":
         return False
 
     small_caves = [v.name for v in stack if v.is_small]
@@ -30,7 +30,12 @@ def can_visit(next: Node, stack: list[Node]) -> bool:
     return len(small_caves) == len(small_caves_set)
 
 
-def recurse_find(caves: dict[str, Node], start: Node, end: Node, stack: Optional[list[Node]] = None) -> list[list[Node]]:
+def recurse_find(
+    caves: dict[str, Node],
+    start: Node,
+    end: Node,
+    stack: Optional[list[Node]] = None,
+) -> list[list[Node]]:
     paths: list[list[Node]] = []
     if stack is None:
         stack = []
@@ -51,11 +56,11 @@ def recurse_find(caves: dict[str, Node], start: Node, end: Node, stack: Optional
 
 async def main() -> None:
     dirname = path.dirname(__file__)
-    infile = path.join(dirname, 'input.txt')
+    infile = path.join(dirname, "input.txt")
     with open(infile) as input_file:
         caves: dict[str, Node] = {}
         for line in input_file:
-            a, b = line.strip().split('-')
+            a, b = line.strip().split("-")
             if a in caves:
                 node_a = caves[a]
             else:
@@ -70,12 +75,12 @@ async def main() -> None:
 
             node_a.add_connection(node_b)
 
-        start = caves['start']
-        end = caves['end']
+        start = caves["start"]
+        end = caves["end"]
 
         paths = recurse_find(caves, start, end)
         print(len(paths))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

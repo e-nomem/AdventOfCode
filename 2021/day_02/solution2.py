@@ -6,14 +6,14 @@ from typing import Tuple
 
 
 class Direction(Enum):
-    FORWARD = 'forward'
-    UP = 'up'
-    DOWN = 'down'
+    FORWARD = "forward"
+    UP = "up"
+    DOWN = "down"
 
 
 # Tuple[x, y, aim]
-def process(acc: Tuple[int, int, int], line: str) -> Tuple[int, int, int]:
-    parts = line.split(' ', 2)
+def process(acc: tuple[int, int, int], line: str) -> tuple[int, int, int]:
+    parts = line.split(" ", 2)
     direction = Direction(parts[0])
     magnitude = int(parts[1])
 
@@ -31,11 +31,11 @@ def process(acc: Tuple[int, int, int], line: str) -> Tuple[int, int, int]:
 
 async def main() -> None:
     dirname = path.dirname(__file__)
-    infile = path.join(dirname, 'input.txt')
+    infile = path.join(dirname, "input.txt")
     with open(infile) as input_file:
         r = reduce(process, (line for line in input_file), (0, 0, 0))
-        print(f'{r[0] * r[1]}')
+        print(f"{r[0] * r[1]}")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

@@ -16,15 +16,15 @@ def simulate_day(fish: Counter[int], _day: int) -> Counter[int]:
 
 async def main() -> None:
     dirname = path.dirname(__file__)
-    infile = path.join(dirname, 'input.txt')
+    infile = path.join(dirname, "input.txt")
     with open(infile) as input_file:
         line = next(line.strip() for line in input_file)
 
-        fish = Counter(int(i) for i in line.split(','))
+        fish = Counter(int(i) for i in line.split(","))
         fish = reduce(simulate_day, range(80), fish)
 
         print(sum(fish.values()))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

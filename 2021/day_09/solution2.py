@@ -9,7 +9,7 @@ Point = tuple[int, int]
 
 async def main() -> None:
     dirname = path.dirname(__file__)
-    infile = path.join(dirname, 'input.txt')
+    infile = path.join(dirname, "input.txt")
     with open(infile) as input_file:
         map = []
         for line in input_file:
@@ -28,13 +28,13 @@ async def main() -> None:
 
                 belong_x = None
                 belong_y = None
-                if x != 0 and map[y][x-1] != 9:
-                    belong_x = belonging[(x-1, y)]
+                if x != 0 and map[y][x - 1] != 9:
+                    belong_x = belonging[(x - 1, y)]
                     belonging[(x, y)] = belong_x
                     basins[belong_x].add((x, y))
 
-                if y!= 0 and map[y-1][x] != 9:
-                    belong_y = belonging[(x, y-1)]
+                if y != 0 and map[y - 1][x] != 9:
+                    belong_y = belonging[(x, y - 1)]
                     belonging[(x, y)] = belong_y
                     basins[belong_y].add((x, y))
 
@@ -61,5 +61,5 @@ async def main() -> None:
         print(reduce(lambda acc, i: acc * i, heap, 1))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

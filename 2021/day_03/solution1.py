@@ -5,7 +5,7 @@ from os import path
 
 async def main() -> None:
     dirname = path.dirname(__file__)
-    infile = path.join(dirname, 'input.txt')
+    infile = path.join(dirname, "input.txt")
     with open(infile) as input_file:
         c: Counter[int] = Counter()
         for line in input_file:
@@ -26,5 +26,5 @@ async def main() -> None:
         print(gamma * epsilon)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

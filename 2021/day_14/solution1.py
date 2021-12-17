@@ -30,7 +30,7 @@ def calculate(polymers: Counter[tuple[str, str]], template: str) -> int:
 
 async def main() -> None:
     dirname = path.dirname(__file__)
-    infile = path.join(dirname, 'input.txt')
+    infile = path.join(dirname, "input.txt")
     with open(infile) as input_file:
         patterns: dict[tuple[str, str], str] = {}
         template = next(input_file).strip()
@@ -38,7 +38,7 @@ async def main() -> None:
         next(input_file)
 
         for line in input_file:
-            pattern, insert = line.strip().split(' -> ')
+            pattern, insert = line.strip().split(" -> ")
             patterns[(pattern[0], pattern[1])] = insert
 
     final = reduce(lambda acc, _step: step(acc, patterns), range(10), polymers)
@@ -46,5 +46,5 @@ async def main() -> None:
     print(calculate(final, template))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

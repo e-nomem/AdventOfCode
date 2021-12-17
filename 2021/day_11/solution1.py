@@ -28,10 +28,9 @@ def simulate_day(octo):
     return len(has_flashed)
 
 
-
 async def main() -> None:
     dirname = path.dirname(__file__)
-    infile = path.join(dirname, 'input.txt')
+    infile = path.join(dirname, "input.txt")
     with open(infile) as input_file:
         octo = []
         for line in input_file:
@@ -45,5 +44,5 @@ async def main() -> None:
     print(flashes)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

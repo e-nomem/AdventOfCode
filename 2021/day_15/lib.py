@@ -1,7 +1,7 @@
+from collections.abc import Callable
+from collections.abc import Generator
 from heapq import heappop
 from heapq import heappush
-from typing import Callable
-from typing import Generator
 from typing import Optional
 
 Point = tuple[int, int]

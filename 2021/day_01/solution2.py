@@ -1,6 +1,6 @@
 import asyncio
+from collections.abc import Iterable
 from os import path
-from typing import Iterable
 
 from .lib import window
 
@@ -11,7 +11,7 @@ def process(depths: Iterable[int]) -> int:
 
 async def main() -> None:
     dirname = path.dirname(__file__)
-    infile = path.join(dirname, 'input.txt')
+    infile = path.join(dirname, "input.txt")
     with open(infile) as input_file:
         increasing = process(int(line) for line in input_file)
         print(increasing)
@@ -23,5 +23,5 @@ def test_process() -> None:
     assert process(depths) == 5
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

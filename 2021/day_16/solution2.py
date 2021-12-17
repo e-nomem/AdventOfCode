@@ -1,4 +1,5 @@
 import asyncio
+from collections.abc import Callable
 from functools import reduce
 from operator import add
 from operator import eq
@@ -6,8 +7,6 @@ from operator import gt
 from operator import lt
 from operator import mul
 from os import path
-from typing import Callable
-from typing import Union
 
 from .lib import bitstream
 from .lib import Packet
@@ -31,7 +30,7 @@ def process_packet(packet: Packet) -> int:
         # Only happens for type 4 'literal' packets
         return packet.data
 
-    return reduce(OPERATORS[packet.type], (process_packet(p) for p in packet.data))
+    return int(reduce(OPERATORS[packet.type], (process_packet(p) for p in packet.data)))
 
 
 @benchmark(10)
@@ -44,12 +43,12 @@ def puzzle(input_lines: list[str]) -> None:
 
 async def main() -> None:
     dirname = path.dirname(__file__)
-    infile = path.join(dirname, 'input.txt')
+    infile = path.join(dirname, "input.txt")
     with open(infile) as input_file:
         input_lines = [l for l in input_file]
 
     puzzle(input_lines)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

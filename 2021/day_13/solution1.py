@@ -4,7 +4,7 @@ from os import path
 
 
 def fold(dots: set[tuple[int, int]], direction: str, border: int, maxes: tuple[int, int]) -> tuple[int, int]:
-    if direction == 'x':
+    if direction == "x":
         min_x = border + 1
         min_y = 0
         for y in range(0, maxes[1] + 1):
@@ -20,7 +20,7 @@ def fold(dots: set[tuple[int, int]], direction: str, border: int, maxes: tuple[i
     for x in range(min_x, maxes[0] + 1):
         for y in range(min_y, maxes[1] + 1):
             if (x, y) in dots:
-                if direction == 'x':
+                if direction == "x":
                     shift_x = border - (x - border)
                     dots.add((shift_x, y))
                 else:
@@ -29,7 +29,7 @@ def fold(dots: set[tuple[int, int]], direction: str, border: int, maxes: tuple[i
 
                 dots.remove((x, y))
 
-    if direction == 'x':
+    if direction == "x":
         return (border - 1, maxes[1])
     else:
         return (maxes[0], border - 1)
@@ -37,7 +37,7 @@ def fold(dots: set[tuple[int, int]], direction: str, border: int, maxes: tuple[i
 
 async def main() -> None:
     dirname = path.dirname(__file__)
-    infile = path.join(dirname, 'input.txt')
+    infile = path.join(dirname, "input.txt")
     with open(infile) as input_file:
         dots: set[tuple[int, int]] = set()
         for line in input_file:
@@ -45,7 +45,7 @@ async def main() -> None:
             if not line:
                 break
 
-            x_str, y_str = line.split(',')
+            x_str, y_str = line.split(",")
             dots.add((int(x_str), int(y_str)))
 
         maxes = (0, 0)
@@ -58,7 +58,7 @@ async def main() -> None:
 
         for line in input_file:
             line = line.strip()
-            parts = line.split(' ')[2].split('=')
+            parts = line.split(" ")[2].split("=")
             direction = parts[0]
             border = int(parts[1])
             maxes = fold(dots, direction, border, maxes)
@@ -67,5 +67,5 @@ async def main() -> None:
     print(len(dots))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

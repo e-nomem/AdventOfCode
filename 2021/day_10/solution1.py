@@ -3,17 +3,17 @@ from os import path
 from typing import Optional
 
 CLOSING = {
-    '(': ')',
-    '[': ']',
-    '{': '}',
-    '<': '>',
+    "(": ")",
+    "[": "]",
+    "{": "}",
+    "<": ">",
 }
 
 POINTS = {
-    ')': 3,
-    ']': 57,
-    '}': 1197,
-    '>': 25137,
+    ")": 3,
+    "]": 57,
+    "}": 1197,
+    ">": 25137,
 }
 
 
@@ -31,11 +31,11 @@ def score(line: str) -> Optional[int]:
 
 async def main() -> None:
     dirname = path.dirname(__file__)
-    infile = path.join(dirname, 'input.txt')
+    infile = path.join(dirname, "input.txt")
     with open(infile) as input_file:
         scores = map(score, (l.strip() for l in input_file))
         print(sum(s for s in scores if s is not None))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())

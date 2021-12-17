@@ -1,6 +1,6 @@
 import asyncio
+from collections.abc import Iterable
 from os import path
-from typing import Iterable
 
 from .lib import find_shortest_path
 from .lib import scale_map
@@ -23,12 +23,12 @@ def puzzle(input_file: Iterable[str], scale: int) -> None:
 
 async def main() -> None:
     dirname = path.dirname(__file__)
-    infile = path.join(dirname, 'input.txt')
+    infile = path.join(dirname, "input.txt")
     with open(infile) as input_file:
         input_lines = [line for line in input_file]
 
     puzzle(input_lines, 1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())
