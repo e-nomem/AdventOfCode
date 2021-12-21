@@ -1,10 +1,12 @@
+from collections.abc import Callable
 from os import getenv
 from statistics import mean
 from statistics import stdev
 from time import perf_counter_ns
+from typing import Optional
 
 
-def benchmark(n: int):
+def benchmark(n: int, cleanup: Optional[Callable[[], None]] = None):
     if not getenv("ENABLE_BENCHMARK"):
         n = 1
 
@@ -12,6 +14,9 @@ def benchmark(n: int):
         def _helper(*args, **kwargs):
             timing = []
             for _ in range(n):
+                if cleanup is not None:
+                    cleanup()
+
                 start = perf_counter_ns()
                 f(*args, **kwargs)
                 end = perf_counter_ns()
