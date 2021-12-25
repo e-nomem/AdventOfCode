@@ -4,7 +4,7 @@ from os import path
 
 from .lib import find_shortest_path
 from .lib import scale_map
-from lib.timing import benchmark
+from aoclib.timing import benchmark
 
 
 @benchmark(100)

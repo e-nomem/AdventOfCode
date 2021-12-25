@@ -33,8 +33,8 @@ async def main() -> None:
     dirname = path.dirname(__file__)
     infile = path.join(dirname, "input.txt")
     with open(infile) as input_file:
-        r = reduce(process, (line for line in input_file), (0, 0, 0))
-        print(f"{r[0] * r[1]}")
+        x, y, _ = reduce(process, (line for line in input_file), (0, 0, 0))
+        print(x * y)
 
 
 if __name__ == "__main__":

@@ -3,7 +3,7 @@ from os import path
 from typing import cast
 
 from .lib import all_launches
-from lib.timing import benchmark
+from aoclib.timing import benchmark
 
 
 @benchmark(100)

@@ -4,7 +4,7 @@ from functools import reduce
 from os import path
 
 
-def simulate_day(fish: Counter[int], _day: int) -> Counter[int]:
+def simulate_day(fish: Counter[int]) -> Counter[int]:
     new_fish = Counter({f - 1: num for f, num in fish.items()})
     respawns = new_fish[-1]
     new_fish[6] += respawns
@@ -21,7 +21,7 @@ async def main() -> None:
         line = next(line.strip() for line in input_file)
 
         fish = Counter(int(i) for i in line.split(","))
-        fish = reduce(simulate_day, range(256), fish)
+        fish = reduce(lambda acc, _: simulate_day(acc), range(256), fish)
 
         print(sum(fish.values()))
 

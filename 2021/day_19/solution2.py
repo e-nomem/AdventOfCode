@@ -6,7 +6,7 @@ from .lib import diff_position
 from .lib import map_scanners
 from .lib import Position
 from .lib import Scanner
-from lib.timing import benchmark
+from aoclib.timing import benchmark
 
 
 def manhattan(pos_a: Position, pos_b: Position) -> int:

@@ -2,7 +2,7 @@ import asyncio
 from os import path
 
 from .lib import find_model
-from lib.timing import benchmark
+from aoclib.timing import benchmark
 
 
 @benchmark(10)

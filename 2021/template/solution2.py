@@ -1,7 +1,7 @@
 import asyncio
 from os import path
 
-from lib.timing import benchmark
+from aoclib.timing import benchmark
 
 
 @benchmark(10)

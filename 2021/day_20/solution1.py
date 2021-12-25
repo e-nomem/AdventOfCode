@@ -6,7 +6,7 @@ from .lib import Algorithm
 from .lib import count_lights
 from .lib import expand_image
 from .lib import Image
-from lib.timing import benchmark
+from aoclib.timing import benchmark
 
 
 @benchmark(10)

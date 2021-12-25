@@ -3,7 +3,7 @@ from functools import reduce
 from os import path
 
 from .lib2 import make_value_generators
-from lib.timing import benchmark
+from aoclib.timing import benchmark
 
 # Through some analysis, we can figure out the following about the algorithm.
 # The code, as provided, does the following:

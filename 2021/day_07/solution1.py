@@ -20,7 +20,7 @@ async def main() -> None:
         min_pos = min(crabs.keys())
         max_pos = max(crabs.keys())
 
-        print(min(fuel_req(pos, crabs) for pos in range(min_pos, max_pos)))
+        print(min(fuel_req(pos, crabs) for pos in range(min_pos, max_pos + 1)))
 
 
 if __name__ == "__main__":

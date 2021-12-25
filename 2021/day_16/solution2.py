@@ -11,7 +11,7 @@ from os import path
 from .lib import bitstream
 from .lib import Packet
 from .lib import parse_packet
-from lib.timing import benchmark
+from aoclib.timing import benchmark
 
 OPERATORS: list[Callable[[int, int], int]] = [
     add,

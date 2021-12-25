@@ -4,7 +4,7 @@ from os import path
 from .lib import Bound
 from .lib import build_tree
 from .lib import parse
-from lib.timing import benchmark
+from aoclib.timing import benchmark
 
 
 @benchmark(10)

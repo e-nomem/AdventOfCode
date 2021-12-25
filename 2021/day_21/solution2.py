@@ -5,7 +5,7 @@ from itertools import product
 from os import path
 from typing import TypeVar
 
-from lib.timing import benchmark
+from aoclib.timing import benchmark
 
 _T = TypeVar("_T")
 
