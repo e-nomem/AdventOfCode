@@ -1,85 +1,46 @@
 import asyncio
-from collections import Counter
+from collections.abc import Sequence
 from os import path
 from typing import Optional
 
-
-class Node:
-    def __init__(self, name: str) -> None:
-        self.name = name
-        self.is_small = name.islower()
-        self.connected: set[str] = set()
-
-    def add_connection(self, other: "Node"):
-        self.connected.add(other.name)
-        other.connected.add(self.name)
+from .lib import neighbors
+from .lib import Node
+from .lib import parse_caves
+from aoclib.search import dfs
+from aoclib.timing import benchmark
 
 
-def can_visit(next: Node, stack: list[Node]) -> bool:
+def can_visit(next: Node, stack: Sequence[Node], state: Optional[str]) -> tuple[bool, Optional[str]]:
     if not next.is_small:
-        return True
+        return True, state
 
     if next.name == "start":
-        return False
+        return False, state
 
-    small_caves = [v.name for v in stack if v.is_small]
-    small_caves_set = set(small_caves)
-    if next.name not in small_caves_set:
-        return True
+    if next.name in {v.name for v in stack if v.is_small}:
+        return state is None, state or next.name
 
-    return len(small_caves) == len(small_caves_set)
+    return True, state
 
 
-def recurse_find(
-    caves: dict[str, Node],
-    start: Node,
-    end: Node,
-    stack: Optional[list[Node]] = None,
-) -> list[list[Node]]:
-    paths: list[list[Node]] = []
-    if stack is None:
-        stack = []
+@benchmark(10)
+def puzzle(input_lines: list[str]) -> None:
+    caves = parse_caves(input_lines)
 
-    if start.name == end.name:
-        return [stack[:]]
+    start = caves["start"]
+    end = caves["end"]
 
-    stack.append(start)
-
-    for next_name in start.connected:
-        next = caves[next_name]
-        if can_visit(next, stack):
-            paths.extend(recurse_find(caves, next, end, stack))
-
-    stack.pop()
-    return paths
+    paths = dfs(start, neighbors(caves, can_visit), lambda n, _: n.name == end.name)
+    print(len(paths))
 
 
 async def main() -> None:
     dirname = path.dirname(__file__)
     infile = path.join(dirname, "input.txt")
     with open(infile) as input_file:
-        caves: dict[str, Node] = {}
-        for line in input_file:
-            a, b = line.strip().split("-")
-            if a in caves:
-                node_a = caves[a]
-            else:
-                node_a = Node(a)
-                caves[a] = node_a
+        input_lines = [l.strip() for l in input_file]
 
-            if b in caves:
-                node_b = caves[b]
-            else:
-                node_b = Node(b)
-                caves[b] = node_b
-
-            node_a.add_connection(node_b)
-
-        start = caves["start"]
-        end = caves["end"]
-
-        paths = recurse_find(caves, start, end)
-        print(len(paths))
+    puzzle(input_lines)
 
 
 if __name__ == "__main__":

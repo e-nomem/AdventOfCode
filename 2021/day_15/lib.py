@@ -1,8 +1,9 @@
 from collections.abc import Callable
 from collections.abc import Generator
-from heapq import heappop
-from heapq import heappush
+from collections.abc import Iterable
 from typing import Optional
+
+from aoclib.search import dijkstra
 
 Point = tuple[int, int]
 
@@ -14,39 +15,17 @@ ADJACENTS = [
 ]
 
 
-def neighbors(cost: Callable[[Point], Optional[int]], coord: Point) -> Generator[tuple[Point, int], None, None]:
-    x, y = coord
-    for x_n, y_n in ADJACENTS:
-        x_p = x + x_n
-        y_p = y + y_n
+def neighbors(cost: Callable[[Point], Optional[int]]) -> Callable[[Point], Iterable[tuple[int, Point]]]:
+    def _helper(coord: Point) -> Generator[tuple[int, Point], None, None]:
+        x, y = coord
+        for x_n, y_n in ADJACENTS:
+            p = x + x_n, y + y_n
+            c = cost(p)
 
-        p = (x_p, y_p)
-        c = cost(p)
+            if c is not None:
+                yield c, p
 
-        if c is not None:
-            yield p, c
-
-
-def find_shortest_path(cost: Callable[[Point], Optional[int]], start: Point, end: Point) -> Optional[int]:
-    visited: set[Point] = set()
-    query_stack: list[tuple[int, Point]] = []
-    heappush(query_stack, (0, start))
-    while query_stack:
-        base_cost, loc = heappop(query_stack)
-
-        if loc in visited:
-            continue
-
-        if loc == end:
-            return base_cost
-
-        visited.add(loc)
-
-        for neighbor, neighbor_cost in neighbors(cost, loc):
-            if neighbor not in visited:
-                heappush(query_stack, (base_cost + neighbor_cost, neighbor))
-
-    return None
+    return _helper
 
 
 def scale_map(map: list[list[int]], scale: int) -> Callable[[Point], Optional[int]]:

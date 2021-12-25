@@ -2,8 +2,9 @@ import asyncio
 from collections.abc import Iterable
 from os import path
 
-from .lib import find_shortest_path
+from .lib import neighbors
 from .lib import scale_map
+from aoclib.search import dijkstra
 from aoclib.timing import benchmark
 
 
@@ -14,11 +15,16 @@ def puzzle(input_file: Iterable[str], scale: int) -> None:
         row = [int(c) for c in line.strip()]
         map.append(row)
 
-    cost_func = scale_map(map, scale)
-
+    neighbor_func = neighbors(scale_map(map, scale))
     start = (0, 0)
     end = ((len(map[0]) * scale) - 1, (len(map) * scale) - 1)
-    print(find_shortest_path(cost_func, start, end))
+
+    node_map = dijkstra(start, neighbor_func, lambda n: n == end)
+    if node_map is None:
+        print("No path found!")
+        return
+
+    print(node_map[end][0])
 
 
 async def main() -> None:
