@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-YEAR=2021
+YEAR=2022
 if [[ "$#" -eq 3 ]]; then
     YEAR=$1
     shift

@@ -1,0 +1,37 @@
+import asyncio
+from functools import reduce
+from os import path
+
+from aoclib.itertools import chunked
+from aoclib.timing import benchmark
+
+CHR_a = ord("a")
+CHR_A = ord("A")
+
+
+def priority(c):
+    val = ord(c)
+    if (ret := val - CHR_a) >= 0:
+        return ret
+
+    return val - CHR_A + 27
+
+
+@benchmark(10)
+def puzzle(input_lines: tuple[str, ...]) -> None:
+    ret = sum(priority(c) for lines in chunked(3, input_lines) for c in reduce(lambda a, b: set(a) & set(b), lines))
+
+    print(ret)
+
+
+async def main() -> None:
+    dirname = path.dirname(__file__)
+    infile = path.join(dirname, "input.txt")
+    with open(infile) as input_file:
+        input_lines = tuple(l.strip() for l in input_file)
+
+    puzzle(input_lines)
+
+
+if __name__ == "__main__":
+    asyncio.run(main())

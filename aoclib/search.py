@@ -1,3 +1,4 @@
+from collections import deque
 from collections.abc import Callable
 from collections.abc import Iterable
 from collections.abc import Sequence
@@ -19,12 +20,12 @@ def dfs(
     initial_state: _StateT = None,
 ) -> Sequence[Sequence[_NodeT]]:
     paths: list[tuple[_NodeT, ...]] = []
-    query_stack: list[tuple[tuple[_NodeT, ...], _NodeT, _StateT]] = [
-        (cast(tuple[_NodeT, ...], ()), start, cast(_StateT, initial_state)),
+    query_stack: list[tuple[_StateT, tuple[_NodeT, ...], _NodeT]] = [
+        (initial_state, (), start),
     ]
 
     while query_stack:
-        path, node, state = query_stack.pop()
+        state, path, node = query_stack.pop()
         path += (node,)
 
         if goal(node, state):
@@ -37,33 +38,51 @@ def dfs(
     return tuple(paths)
 
 
-def dijkstra(
+def bfs(
     start: _NodeT,
-    neighbors: Callable[[_NodeT], Iterable[tuple[int, _NodeT]]],
-    goal: Callable[[_NodeT], bool],
-    heuristic: Optional[Callable[[_NodeT], int]] = None,
-) -> Optional[dict[_NodeT, tuple[int, _NodeT]]]:
-    if heuristic is None:
-        heuristic = lambda _: 0
+    neighbors: Callable[[Sequence[_NodeT], _StateT], Iterable[tuple[_NodeT, _StateT]]],
+    goal: Callable[[_NodeT, _StateT], bool],
+    *,
+    initial_state: _StateT = None,
+) -> Sequence[Sequence[_NodeT]]:
+    paths: list[tuple[_NodeT, ...]] = []
+    query_queue: deque[tuple[tuple[_NodeT, ...], _NodeT, _StateT]] = deque(
+        [
+            ((), start, initial_state),
+        ],
+    )
 
-    visited: dict[_NodeT, tuple[int, _NodeT]] = {}
-    query_stack: list[tuple[int, int, _NodeT, _NodeT]] = [(0, 0, start, start)]
+    while query_queue:
+        path, node, state = query_queue.popleft()
+        path += (node,)
 
-    while query_stack:
-        _, cost, node, parent = heappop(query_stack)
-
-        if node in visited:
+        if goal(node, state):
+            paths.append(path)
             continue
 
-        visited[node] = (cost, parent)
+        for neighbor, neighbor_state in neighbors(path, state):
+            query_queue.append((path, neighbor, neighbor_state))
 
-        if goal(node):
-            return visited
+    return tuple(paths)
 
-        for n_cost, neighbor in neighbors(node):
-            if neighbor not in visited:
-                neighbor_cost = cost + n_cost
-                neighbor_heuristic = neighbor_cost + heuristic(neighbor)
-                heappush(query_stack, (neighbor_heuristic, neighbor_cost, neighbor, node))
+
+def dijkstra(
+    start: _NodeT,
+    neighbors: Callable[[Sequence[_NodeT], int], Iterable[tuple[_NodeT, int]]],
+    goal: Callable[[_NodeT], bool],
+) -> Sequence[_NodeT]:
+    query_heap: list[int, tuple[_NodeT, ...], _NodeT] = [
+        (0, (), start),
+    ]
+
+    while query_heap:
+        path, node, cost = heappop(query_heap)
+        path += (node,)
+
+        if goal(node, cost):
+            return path
+
+        for neighbor, neighbor_cost in neighbors(path, cost):
+            heappush(query_heap, (neighbor_cost, path, neighbor))
 
     return None
